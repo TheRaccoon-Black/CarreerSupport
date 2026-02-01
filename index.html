@@ -4,199 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e-MinBa - Kenali Potensimu, Tentukan Kariermu</title>
-    <!-- Mencegah error favicon.ico 404 -->
     <link rel="icon" href="data:,">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CONFIGURATION: Ganti dengan config dari Firebase Console Anda
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyBNkOYYgTIghVGwEKujGhN-WNOMrinTezY",
+            authDomain: "e-minba.firebaseapp.com",
+            projectId: "e-minba",
+            storageBucket: "e-minba.firebasestorage.app",
+            messagingSenderId: "589844170500",
+            appId: "1:589844170500:web:1c6a1c671baa3b7e1cf251"
+        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'e-minba-app';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.appId = appId;
+        window.user = null;
+
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) { console.error("Auth Error:", err); }
+        }
+
+        onAuthStateChanged(auth, (u) => { window.user = u; });
+        initAuth();
+    </script>
+
     <style>
-        :root {
-            --primary-blue: #1e40af;
-            --light-gray: #f8fafc;
-            --border-gray: #e2e8f0;
-        }
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: white;
-            color: #1e293b;
-        }
-        h1, h2, h3, .font-title {
-            font-family: 'Montserrat', sans-serif;
-        }
-        .bg-primary { background-color: var(--primary-blue); }
-        .text-primary { color: var(--primary-blue); }
-        .border-gray { border-color: var(--border-gray); }
-        .bg-gray-light { background-color: var(--light-gray); }
-        
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .progress-bar { transition: width 0.4s ease-in-out; }
+        :root { --primary: #2563eb; --primary-dark: #1e40af; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; color: #0f172a; }
+        .font-title { font-family: 'Montserrat', sans-serif; }
+        .bg-blue-gradient { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-bar-fill { transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1); }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .btn-hover { transition: all 0.3s ease; }
+        .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col selection:bg-blue-100">
 
     <!-- Header -->
-    <header class="bg-primary text-white shadow-md">
-        <div class="max-w-5xl mx-auto px-6 py-5 flex justify-between items-center">
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">e-MinBa</h1>
-                    <p class="text-[10px] opacity-80 uppercase font-semibold tracking-widest">Kenali Potensimu, Tentukan Kariermu</p>
+                <div class="w-10 h-10 bg-blue-gradient rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
                 </div>
-            </div>
-            <div id="header-user-info" class="hidden text-sm font-medium opacity-90">
-                <span id="display-name">Siswa</span> | <span id="display-class">Kelas</span>
+                <div>
+                    <h1 class="text-xl font-bold font-title tracking-tight text-slate-800 leading-none">e-MinBa</h1>
+                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Career Navigator</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow container max-w-4xl mx-auto px-6 py-10">
-        
-        <!-- 1. Intro & Data Diri -->
-        <div id="section-intro" class="fade-in space-y-8">
-            <div class="text-center max-w-2xl mx-auto mb-10">
-                <h2 class="text-3xl font-bold text-slate-800 mb-4">Selamat Datang di e-MinBa</h2>
-                <p class="text-xl font-medium text-slate-700 leading-relaxed mb-4">
-                    e-MinBa hadir sebagai tes minat bakat digital berbasis RIASEC untuk membantu anda mengenali minat karier dalam pengambilan keputusan karier
-                </p>
-                <p class="text-slate-500 italic text-sm">Selesaikan 30 butir pernyataan untuk melihat profil minat Anda.</p>
-            </div>
+    <main class="flex-grow flex items-center">
+        <div class="container max-w-4xl mx-auto px-6 py-8">
+            
+            <!-- 1. Intro -->
+            <section id="view-intro" class="view-section active fade-in max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-4 font-title tracking-tight">Selamat Datang di e-MinBa</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed font-medium">
+                        e-MinBa hadir sebagai tes minat bakat digital berbasis RIASEC untuk membantu anda mengenali minat karier dalam pengambilan keputusan karier.
+                    </p>
+                </div>
 
-            <div class="bg-gray-light p-8 rounded-2xl border border-gray max-w-md mx-auto">
-                <h3 class="font-title text-xl font-bold mb-6 text-center">Identitas Siswa</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">Nama / Inisial</label>
-                        <input type="text" id="input-name" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Nama Anda">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Kelas</label>
-                            <input type="text" id="input-class" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Contoh: 12 IPA 1">
+                <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-xl">
+                    <h3 class="font-title text-xl font-bold mb-8 text-center text-slate-800">Identitas Siswa</h3>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama / Inisial</label>
+                            <input type="text" id="input-name" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none font-medium" placeholder="Nama Anda">
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Jurusan</label>
-                            <input type="text" id="input-major" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="IPA / IPS">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Kelas</label>
+                                <input type="text" id="input-class" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none font-medium" placeholder="12 IPA 1">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Jurusan</label>
+                                <input type="text" id="input-major" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none font-medium" placeholder="IPA/IPS">
+                            </div>
+                        </div>
+                        <button onclick="startTest()" class="w-full bg-blue-gradient text-white font-bold py-5 rounded-2xl btn-hover shadow-lg text-lg">
+                            Mulai Tes Sekarang
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Test -->
+            <section id="view-test" class="view-section fade-in max-w-3xl mx-auto">
+                <div class="mb-10 text-center">
+                    <div class="flex items-center justify-between gap-4 max-w-xs mx-auto">
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div id="main-progress" class="h-full bg-blue-600 progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-slate-400 whitespace-nowrap"><span id="curr-q" class="text-blue-600">1</span> / 30</span>
+                    </div>
+                </div>
+                <div class="bg-white p-12 rounded-[40px] border border-slate-100 shadow-2xl text-center">
+                    <h3 id="q-text" class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight mb-16">...</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3" id="likert-container"></div>
+                </div>
+            </section>
+
+            <!-- 3. Saving -->
+            <section id="view-saving" class="view-section fade-in text-center py-20">
+                <div class="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <h2 class="text-xl font-bold text-slate-800">Menyimpan Hasil ke Cloud...</h2>
+                <p class="text-slate-500">Hasil Anda sedang diproses dan diarsipkan.</p>
+            </section>
+
+            <!-- 4. Result -->
+            <section id="view-result" class="view-section fade-in space-y-8">
+                <div class="bg-blue-gradient text-white p-10 rounded-[40px] flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-4xl font-black font-title mb-2 tracking-tight">Analisis Karier</h2>
+                        <p class="text-blue-100 font-medium">Tersimpan secara online dengan ID Siswa Anda.</p>
+                    </div>
+                    <div class="bg-white text-blue-700 px-10 py-6 rounded-3xl text-center shadow-xl">
+                        <span class="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-60">Holland Code</span>
+                        <span id="holland-code" class="text-5xl font-black tracking-tighter">---</span>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 bg-white p-10 rounded-[40px] border border-slate-100 shadow-xl">
+                        <h3 class="font-title text-xl font-bold mb-8">Profil Minat (RIASEC)</h3>
+                        <div id="riasec-chart" class="space-y-6"></div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="bg-slate-900 p-10 rounded-[40px] text-white shadow-xl">
+                            <h3 class="font-title text-xl font-bold mb-6">Pekerjaan Relevan</h3>
+                            <div id="career-recommendation" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
-                    <button onclick="startTest()" class="w-full bg-primary text-white font-bold py-4 rounded-xl mt-4 hover:opacity-90 transition-all shadow-lg active:scale-95">
-                        Mulai Tes Sekarang
-                    </button>
                 </div>
-            </div>
-        </div>
+                <div class="text-center pt-6">
+                    <button onclick="location.reload()" class="bg-slate-100 text-slate-600 px-8 py-3 rounded-full font-bold">Tutup & Selesai</button>
+                </div>
+            </section>
 
-        <!-- 2. Test Container -->
-        <div id="section-test" class="hidden fade-in">
-            <div class="mb-8 flex justify-between items-center">
-                <div>
-                    <span class="bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Angket RIASEC</span>
-                    <h2 class="text-xl font-bold mt-2">Pilih yang Paling Sesuai</h2>
-                </div>
-                <div class="text-right">
-                    <span class="text-sm font-bold text-slate-400">Pertanyaan</span>
-                    <p class="text-xl font-bold text-primary"><span id="curr-q">1</span><span class="text-slate-300">/</span><span id="total-q">30</span></p>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="w-full h-2 bg-slate-100 rounded-full mb-12 overflow-hidden">
-                <div id="main-progress" class="h-full bg-primary progress-bar" style="width: 0%"></div>
-            </div>
-
-            <div class="bg-white p-10 rounded-3xl border-2 border-gray shadow-sm text-center">
-                <p id="q-text" class="text-2xl font-semibold text-slate-800 leading-relaxed mb-12">Pernyataan instrumen...</p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                    <button onclick="saveAnswer(1)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
-                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">1</span> Sangat Tidak Sesuai
-                    </button>
-                    <button onclick="saveAnswer(2)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
-                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">2</span> Tidak Sesuai
-                    </button>
-                    <button onclick="saveAnswer(3)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
-                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">3</span> Netral
-                    </button>
-                    <button onclick="saveAnswer(4)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
-                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">4</span> Sesuai
-                    </button>
-                    <button onclick="saveAnswer(5)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
-                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">5</span> Sangat Sesuai
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Result Section -->
-        <div id="section-result" class="hidden fade-in space-y-8">
-            <div class="bg-primary text-white p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
-                <div>
-                    <h2 class="text-3xl font-bold mb-1">Hasil Analisis Minat</h2>
-                    <p class="opacity-80">Profil kecenderungan karier berdasarkan teori Holland.</p>
-                </div>
-                <div class="bg-white/20 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/30 text-center">
-                    <span class="text-xs font-bold uppercase tracking-widest block mb-1">Kode Holland Anda</span>
-                    <span id="holland-code" class="text-4xl font-black">---</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-3xl border border-gray shadow-sm">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="p-2 bg-blue-50 rounded-lg text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-title text-xl font-bold">Skor Dimensi RIASEC</h3>
-                </div>
-                <div id="riasec-chart" class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
-                    <!-- Chart items go here -->
-                </div>
-            </div>
-
-            <!-- Career Recommendation -->
-            <div class="bg-gray-light p-8 rounded-3xl border border-gray">
-                <h3 class="font-title text-xl font-bold mb-6 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Rekomendasi Karier (Tipe Dominan)
-                </h3>
-                <div id="career-recommendation" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    <!-- Recommended items go here -->
-                </div>
-                <p class="mt-6 text-sm text-slate-500 italic text-center">Hasil di atas merupakan saran awal, diskusikan dengan guru BK untuk pendalaman lebih lanjut.</p>
-            </div>
-
-            <div class="text-center pt-8">
-                <button onclick="location.reload()" class="bg-slate-100 text-slate-600 px-6 py-3 rounded-full font-bold hover:bg-slate-200 transition-all inline-flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                    </svg>
-                    Ulangi Tes
-                </button>
-            </div>
         </div>
     </main>
 
-    <footer class="bg-white border-t border-gray py-8 mt-auto">
-        <div class="max-w-5xl mx-auto px-6 text-center">
-            <div class="flex items-center justify-center gap-2 text-primary font-bold mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                e-MinBa
-            </div>
-            <p class="text-slate-400 text-sm italic">“Kenali Potensimu, Tentukan Kariermu”</p>
-            <p class="text-slate-300 text-[10px] mt-4 uppercase tracking-widest">&copy; 2026 Career Assessment System</p>
-        </div>
-    </footer>
+    <script type="module">
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <script>
-        // Data RIASEC sesuai dokumen yang diupload
         const riasecItems = [
             { id: 1, type: 'R', text: "Saya senang melakukan aktivitas yang melibatkan alat atau mesin." },
             { id: 2, type: 'R', text: "Saya tertarik melakukan pekerjaan yang bersifat teknis dan praktis." },
@@ -230,11 +207,7 @@
             { id: 30, type: 'C', text: "Saya senang mengatur jadwal, arsip, and sistem kerja agar tertata." }
         ];
 
-        const riasecNames = {
-            R: "Realistic", I: "Investigative", A: "Artistic",
-            S: "Social", E: "Enterprising", C: "Conventional"
-        };
-
+        const riasecNames = { R: "Realistic", I: "Investigative", A: "Artistic", S: "Social", E: "Enterprising", C: "Conventional" };
         const riasecCareers = {
             R: ["Mekanik", "Insinyur Sipil", "Arsitek", "Pilot", "Teknisi"],
             I: ["Peneliti", "Analis Data", "Programmer", "Dokter", "Ekonom"],
@@ -246,93 +219,92 @@
 
         let currentIdx = 0;
         let answers = [];
+        let userData = {};
 
-        function startTest() {
-            const name = document.getElementById('input-name').value;
-            const cls = document.getElementById('input-class').value;
-            const major = document.getElementById('input-major').value;
-
-            if (!name || !cls || !major) {
-                alert("Harap isi data diri lengkap.");
-                return;
-            }
-
-            document.getElementById('display-name').textContent = name;
-            document.getElementById('display-class').textContent = cls;
-            
-            document.getElementById('section-intro').classList.add('hidden');
-            document.getElementById('section-test').classList.remove('hidden');
-            document.getElementById('header-user-info').classList.remove('hidden');
-            
+        window.startTest = () => {
+            userData = {
+                name: document.getElementById('input-name').value,
+                class: document.getElementById('input-class').value,
+                major: document.getElementById('input-major').value
+            };
+            if (!userData.name || !userData.class || !userData.major) return alert("Lengkapi data diri!");
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-test').classList.add('active');
             renderQuestion();
-        }
+        };
 
         function renderQuestion() {
             const q = riasecItems[currentIdx];
             document.getElementById('q-text').textContent = q.text;
             document.getElementById('curr-q').textContent = currentIdx + 1;
-            document.getElementById('main-progress').style.width = `${(currentIdx / riasecItems.length) * 100}%`;
+            document.getElementById('main-progress').style.width = `${(currentIdx / 30) * 100}%`;
+            
+            const cont = document.getElementById('likert-container');
+            cont.innerHTML = '';
+            [1,2,3,4,5].forEach(v => {
+                const b = document.createElement('button');
+                b.className = "p-5 bg-slate-50 border-2 border-transparent hover:border-blue-600 rounded-2xl group transition-all flex flex-col items-center";
+                b.innerHTML = `<span class="text-xl font-black text-slate-300 group-hover:text-blue-600">${v}</span>`;
+                b.onclick = () => saveAnswer(v);
+                cont.appendChild(b);
+            });
         }
 
-        function saveAnswer(val) {
+        async function saveAnswer(v) {
             const q = riasecItems[currentIdx];
-            let finalVal = val;
-
-            // Reverse Score logic (Item 14)
-            if (q.reverse) finalVal = 6 - val;
-
-            answers.push({ type: q.type, score: finalVal });
-
-            if (currentIdx < riasecItems.length - 1) {
-                currentIdx++;
-                renderQuestion();
-            } else {
-                showResults();
-            }
+            answers.push({ type: q.type, score: q.reverse ? (6-v) : v });
+            if (currentIdx < 29) { currentIdx++; renderQuestion(); }
+            else { await processResults(); }
         }
 
-        function showResults() {
-            document.getElementById('section-test').classList.add('hidden');
-            document.getElementById('section-result').classList.remove('hidden');
-            document.getElementById('main-progress').style.width = `100%`;
+        async function processResults() {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-saving').classList.add('active');
 
-            const totals = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-            answers.forEach(ans => totals[ans.type] += ans.score);
+            const totals = { R:0, I:0, A:0, S:0, E:0, C:0 };
+            answers.forEach(a => totals[a.type] += a.score);
+            const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
+            const code = sorted.slice(0,3).map(i => i[0]).join('');
 
-            // Holland Code
-            const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-            const code = sorted.slice(0, 3).map(i => i[0]).join('');
+            const finalData = {
+                id: window.user?.uid || 'anon-' + Date.now(),
+                name: userData.name,
+                class: userData.class,
+                major: userData.major,
+                responses: answers.map(a => a.score),
+                scores: totals,
+                hollandCode: code,
+                recommendations: riasecCareers[sorted[0][0]],
+                timestamp: serverTimestamp()
+            };
+
+            if (window.user) {
+                try {
+                    const col = collection(window.db, 'artifacts', window.appId, 'public', 'data', 'responses');
+                    await addDoc(col, finalData);
+                } catch (e) { console.error("Cloud Save Error:", e); }
+            }
+
+            // Render UI
             document.getElementById('holland-code').textContent = code;
-
-            // Chart
             const chart = document.getElementById('riasec-chart');
             chart.innerHTML = '';
-            Object.entries(totals).forEach(([type, score]) => {
-                const perc = (score / 25) * 100; // 5 items * max 5 = 25
+            Object.entries(totals).forEach(([t, s]) => {
+                const perc = (s / 25) * 100;
                 chart.insertAdjacentHTML('beforeend', `
                     <div class="space-y-1">
-                        <div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase">
-                            <span>${riasecNames[type]}</span>
-                            <span>${score} / 25</span>
-                        </div>
-                        <div class="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                            <div class="h-full bg-primary transition-all duration-1000" style="width: ${perc}%"></div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase"><span>${riasecNames[t]}</span><span>${s}/25</span></div>
+                        <div class="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                            <div class="h-full bg-blue-600 progress-bar-fill" style="width:${perc}%"></div>
                         </div>
                     </div>
                 `);
             });
+            const rec = document.getElementById('career-recommendation');
+            rec.innerHTML = riasecCareers[sorted[0][0]].map(c => `<span class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-700">${c}</span>`).join('');
 
-            // Recommendations
-            const recBox = document.getElementById('career-recommendation');
-            recBox.innerHTML = '';
-            const topType = sorted[0][0];
-            riasecCareers[topType].forEach(career => {
-                recBox.insertAdjacentHTML('beforeend', `
-                    <div class="p-3 bg-white border border-slate-100 rounded-xl text-center text-sm font-semibold text-slate-700 shadow-sm">
-                        ${career}
-                    </div>
-                `);
-            });
+            document.getElementById('view-saving').classList.remove('active');
+            document.getElementById('view-result').classList.add('active');
         }
     </script>
 </body>

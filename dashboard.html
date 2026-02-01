@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-MinBa - Admin Dashboard</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CONFIGURATION: Gunakan config yang sama dengan index.html
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyBNkOYYgTIghVGwEKujGhN-WNOMrinTezY",
+            authDomain: "e-minba.firebaseapp.com",
+            projectId: "e-minba",
+            storageBucket: "e-minba.firebasestorage.app",
+            messagingSenderId: "589844170500",
+            appId: "1:589844170500:web:1c6a1c671baa3b7e1cf251"
+        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'e-minba-app';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.appId = appId;
+        window.allData = [];
+
+        // Inisialisasi Auth (RULE 3)
+        async function initAuth() {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        }
+
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                console.log("Admin Terhubung:", u.uid);
+                loadData();
+            }
+        });
+
+        initAuth();
+
+        // Fungsi Memuat Data (RULE 2: Filter/Sort di Memori)
+        async function loadData() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '<tr><td colspan="11" class="p-10 text-center text-slate-400 animate-pulse font-medium">Mengambil data dari cloud...</td></tr>';
+
+            try {
+                const col = collection(db, 'artifacts', appId, 'public', 'data', 'responses');
+                const snap = await getDocs(col);
+                window.allData = snap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+
+                // Urutkan berdasarkan waktu terbaru
+                window.allData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                tbody.innerHTML = '';
+                if (window.allData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="11" class="p-10 text-center italic text-slate-400">Belum ada data siswa yang masuk.</td></tr>';
+                    return;
+                }
+
+                window.allData.forEach(r => {
+                    const date = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleString('id-ID') : 'Sedang diproses';
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="hover:bg-blue-50/50 border-b border-slate-100 transition-colors">
+                            <td class="px-4 py-4 font-mono text-[10px] text-slate-400 uppercase">${r.id?.substring(0, 8)}...</td>
+                            <td class="px-4 py-4 font-bold text-slate-800">${r.name || 'Tanpa Nama'}</td>
+                            <td class="px-4 py-4 text-slate-500 text-xs">${r.class || '-'} / ${r.major || '-'}</td>
+                            <td class="px-4 py-4"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg font-black uppercase text-[10px] tracking-tighter">${r.hollandCode || '---'}</span></td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.R || 0}</td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.I || 0}</td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.A || 0}</td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.S || 0}</td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.E || 0}</td>
+                            <td class="px-3 py-4 text-center font-bold text-slate-700">${r.scores?.C || 0}</td>
+                            <td class="px-4 py-4 text-slate-400 text-[10px] font-medium">${date}</td>
+                        </tr>
+                    `);
+                });
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="11" class="p-10 text-center text-red-500 font-bold">Gagal memuat data. Periksa koneksi internet atau Firestore Rules.</td></tr>';
+            }
+        }
+
+        // Fungsi Ekspor ke CSV yang Kompatibel dengan Excel (Mencakup semua poin di gambar)
+        window.exportCSV = () => {
+            if (window.allData.length === 0) {
+                showToast("Tidak ada data untuk diekspor.");
+                return;
+            }
+
+            // Header Kolom Lengkap sesuai Gambar
+            let csvContent = "ID Pengguna,Nama Siswa,Kelas,Jurusan,Holland Code,Realistic,Investigative,Artistic,Social,Enterprising,Conventional,Respons Butir (1-30),Rekomendasi Karier,Tanggal Pengisian\n";
+
+            // Isi Baris
+            window.allData.forEach(r => {
+                const date = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleString('id-ID').replace(',', '') : '';
+                const responsesStr = r.responses ? r.responses.join(';') : '-';
+                const recommendationsStr = r.recommendations ? r.recommendations.join('; ') : '-';
+
+                csvContent += `"${r.id}","${r.name}","${r.class}","${r.major}","${r.hollandCode}",${r.scores.R},${r.scores.I},${r.scores.A},${r.scores.S},${r.scores.E},${r.scores.C},"${responsesStr}","${recommendationsStr}","${date}"\n`;
+            });
+
+            // Menambahkan BOM (Byte Order Mark) agar Excel mendeteksi UTF-8
+            const BOM = "\uFEFF";
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Laporan_Lengkap_eMinBa_${timestamp}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("Laporan lengkap berhasil diunduh.");
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        window.reloadData = loadData;
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .font-title {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .custom-shadow {
+            box-shadow: 0 10px 50px -12px rgba(15, 23, 42, 0.05);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-6 md:p-10 selection:bg-blue-100">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Dashboard -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-black font-title text-slate-900 tracking-tight">e-MinBa Dashboard</h1>
+                </div>
+                <p class="text-slate-500 font-medium">Monitoring data pengguna, jawaban, dan hasil tes sesuai standar
+                    instrumen.</p>
+            </div>
+
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <button onclick="reloadData()"
+                    class="flex-1 md:flex-none px-6 py-3 bg-white border border-slate-200 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Segarkan
+                </button>
+                <button onclick="exportCSV()"
+                    class="flex-1 md:flex-none px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Ekspor Data Lengkap
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden custom-shadow">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="px-4 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">ID
+                                Siswa</th>
+                            <th class="px-4 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Nama
+                                Lengkap</th>
+                            <th class="px-4 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Kelas
+                                / Jurusan</th>
+                            <th class="px-4 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                                Holland Code</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                R</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                I</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                A</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                S</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                E</th>
+                            <th
+                                class="px-3 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">
+                                C</th>
+                            <th class="px-4 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Waktu
+                                Input</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-slate-100">
+                        <!-- Baris data diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Toast Notifikasi -->
+        <div id="toast"
+            class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-3 bg-slate-800 text-white text-sm font-bold rounded-full shadow-2xl transition-all duration-300 translate-y-20 opacity-0 z-[100]">
+            Pesan notifikasi
+        </div>
+    </div>
+
+    <footer class="mt-20 text-center pb-10">
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">Administrator Area • e-MinBa Digital
+            System 2026</p>
+    </footer>
+
+</body>
+
+</html>
