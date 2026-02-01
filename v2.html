@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-MinBa - Kenali Potensimu, Tentukan Kariermu</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg-soft: #f0f7ff;
+            --text-main: #0f172a;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #ffffff;
+            color: var(--text-main);
+        }
+        .font-title {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .bg-blue-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+        }
+        .progress-bar-fill {
+            transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-700">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-gradient rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold font-title tracking-tight text-slate-800 leading-none">e-MinBa</h1>
+                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Career Navigator</span>
+                </div>
+            </div>
+            <div id="header-user-info" class="hidden flex items-center gap-2">
+                <div class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span id="display-name" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Siswa</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center">
+        <div class="container max-w-4xl mx-auto px-6 py-12">
+            
+            <!-- 1. Intro & Data Diri -->
+            <div id="section-intro" class="fade-in max-w-2xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-extrabold text-slate-900 mb-6 font-title tracking-tight leading-tight">
+                        Selamat Datang di e-MinBa
+                    </h2>
+                    <p class="text-lg text-slate-600 leading-relaxed mb-6 font-medium">
+                        e-MinBa hadir sebagai tes minat bakat digital berbasis RIASEC untuk membantu anda mengenali minat karier dalam pengambilan keputusan karier.
+                    </p>
+                    <div class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                        30 Pertanyaan • ±5 Menit • Akurasi Tinggi
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-xl shadow-slate-100/50">
+                    <h3 class="font-title text-xl font-bold mb-8 text-center text-slate-800">Lengkapi Profil Anda</h3>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Lengkap / Inisial</label>
+                            <input type="text" id="input-name" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none transition-all text-slate-800 font-medium placeholder:text-slate-400" placeholder="Masukkan nama Anda">
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Kelas</label>
+                                <input type="text" id="input-class" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none transition-all text-slate-800 font-medium placeholder:text-slate-400" placeholder="Contoh: 12 IPA 1">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Jurusan</label>
+                                <input type="text" id="input-major" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none transition-all text-slate-800 font-medium placeholder:text-slate-400" placeholder="IPA / IPS">
+                            </div>
+                        </div>
+                        <button onclick="startTest()" class="w-full bg-blue-gradient text-white font-bold py-5 rounded-2xl mt-4 btn-hover shadow-lg shadow-blue-200 text-lg">
+                            Mulai Tes Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Test Container -->
+            <div id="section-test" class="hidden fade-in max-w-3xl mx-auto">
+                <div class="mb-10 text-center">
+                    <div class="mb-4">
+                        <span class="px-4 py-1.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full uppercase tracking-[0.2em]">Tahap: Eksplorasi Minat</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-4 max-w-xs mx-auto">
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div id="main-progress" class="h-full bg-blue-600 progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="text-sm font-bold text-slate-400 whitespace-nowrap">
+                            <span id="curr-q" class="text-blue-600">1</span> / <span id="total-q">30</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-12 rounded-[40px] border border-slate-100 shadow-2xl shadow-slate-200/50 text-center">
+                    <h3 id="q-text" class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight mb-16 px-4">
+                        Memuat pertanyaan...
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                        <button onclick="saveAnswer(1)" class="btn-hover flex flex-col items-center justify-center p-6 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-white rounded-[24px] group">
+                            <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 mb-2">1</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center group-hover:text-slate-600 leading-tight">Sangat Tidak Sesuai</span>
+                        </button>
+                        <button onclick="saveAnswer(2)" class="btn-hover flex flex-col items-center justify-center p-6 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-white rounded-[24px] group">
+                            <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 mb-2">2</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center group-hover:text-slate-600 leading-tight">Tidak Sesuai</span>
+                        </button>
+                        <button onclick="saveAnswer(3)" class="btn-hover flex flex-col items-center justify-center p-6 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-white rounded-[24px] group">
+                            <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 mb-2">3</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center group-hover:text-slate-600 leading-tight">Netral</span>
+                        </button>
+                        <button onclick="saveAnswer(4)" class="btn-hover flex flex-col items-center justify-center p-6 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-white rounded-[24px] group">
+                            <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 mb-2">4</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center group-hover:text-slate-600 leading-tight">Sesuai</span>
+                        </button>
+                        <button onclick="saveAnswer(5)" class="btn-hover flex flex-col items-center justify-center p-6 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-white rounded-[24px] group">
+                            <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 mb-2">5</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center group-hover:text-slate-600 leading-tight">Sangat Sesuai</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Result Section -->
+            <div id="section-result" class="hidden fade-in space-y-8">
+                <div class="bg-blue-gradient text-white p-10 rounded-[40px] flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl shadow-blue-200">
+                    <div class="text-center md:text-left">
+                        <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase tracking-widest mb-4">Laporan Hasil Tes</div>
+                        <h2 class="text-4xl font-black font-title mb-2">Analisis Karier</h2>
+                        <p class="text-blue-100 font-medium">Temukan kecenderungan minat berdasarkan Holland's Code.</p>
+                    </div>
+                    <div class="bg-white text-blue-700 px-10 py-6 rounded-3xl border border-white/30 text-center shadow-xl">
+                        <span class="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-60">Holland Code</span>
+                        <span id="holland-code" class="text-5xl font-black tracking-tighter">---</span>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-5 gap-8">
+                    <!-- Statistics -->
+                    <div class="lg:col-span-3 bg-white p-10 rounded-[40px] border border-slate-100 shadow-xl shadow-slate-100">
+                        <h3 class="font-title text-xl font-bold mb-10 flex items-center gap-3 text-slate-800">
+                            <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                            Distribusi Skor RIASEC
+                        </h3>
+                        <div id="riasec-chart" class="space-y-8">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-slate-900 p-10 rounded-[40px] text-white shadow-xl">
+                            <h3 class="font-title text-xl font-bold mb-6 flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Pekerjaan Relevan
+                            </h3>
+                            <div id="career-recommendation" class="flex flex-wrap gap-2">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-8 rounded-[40px] border border-blue-100">
+                            <p class="text-blue-800 text-sm font-semibold leading-relaxed">
+                                <span class="block text-blue-600 text-xs font-black uppercase mb-2 tracking-widest">Catatan Penting</span>
+                                Hasil ini bersifat indikatif sebagai langkah awal pengenalan diri. Sangat disarankan untuk berkonsultasi lebih lanjut dengan Guru BK atau konselor karier profesional.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-10">
+                    <button onclick="location.reload()" class="inline-flex items-center gap-2 text-slate-400 font-bold hover:text-blue-600 transition-all uppercase text-xs tracking-widest group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:rotate-180 transition-all duration-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                        Lakukan Tes Ulang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-12 bg-white border-t border-slate-50">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center gap-2 mb-6 opacity-30">
+                <div class="h-px w-8 bg-slate-400"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                <div class="h-px w-8 bg-slate-400"></div>
+            </div>
+            <p class="text-slate-400 text-[11px] font-bold uppercase tracking-[0.3em]">e-MinBa Digital Assessment System &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data RIASEC sesuai dokumen PDF
+        const riasecItems = [
+            { id: 1, type: 'R', text: "Saya senang melakukan aktivitas yang melibatkan alat atau mesin." },
+            { id: 2, type: 'R', text: "Saya tertarik melakukan pekerjaan yang bersifat teknis dan praktis." },
+            { id: 3, type: 'R', text: "Saya lebih suka aktivitas kerja yang hasilnya terlihat langsung dan nyata." },
+            { id: 4, type: 'R', text: "Saya tertarik pada pekerjaan lapangan atau pekerjaan yang banyak bergerak." },
+            { id: 5, type: 'R', text: "Saya senang mencoba memperbaiki atau merakit sesuatu." },
+            { id: 6, type: 'I', text: "Saya senang memecahkan masalah dengan cara berpikir logis dan sistematis." },
+            { id: 7, type: 'I', text: "Saya tertarik pada kegiatan penelitian, eksperimen, atau analisis data." },
+            { id: 8, type: 'I', text: "Saya suka mencari tahu penyebab suatu masalah sampai tuntas." },
+            { id: 9, type: 'I', text: "Saya menikmati aktivitas yang menantang kemampuan berpikir." },
+            { id: 10, type: 'I', text: "Saya senang mempelajari konsep atau teori secara mendalam." },
+            { id: 11, type: 'A', text: "Saya senang membuat karya kreatif atau sesuatu yang unik." },
+            { id: 12, type: 'A', text: "Saya tertarik pada seni, desain, musik, atau kegiatan kreatif lainnya." },
+            { id: 13, type: 'A', text: "Saya suka mengekspresikan ide atau perasaan melalui karya." },
+            { id: 14, type: 'A', text: "Saya kurang menyukai pekerjaan yang terlalu kaku dan monoton.", reverse: true },
+            { id: 15, type: 'A', text: "Saya mudah menemukan ide-ide kreatif dalam berbagai situasi." },
+            { id: 16, type: 'S', text: "Saya senang membantu orang lain menyelesaikan masalah mereka." },
+            { id: 17, type: 'S', text: "Saya tertarik pada pekerjaan yang melibatkan mengajar atau membimbing orang lain." },
+            { id: 18, type: 'S', text: "Saya merasa nyaman berkomunikasi dan berinteraksi dengan banyak orang." },
+            { id: 19, type: 'S', text: "Saya mudah memahami perasaan dan kebutuhan orang lain." },
+            { id: 20, type: 'S', text: "Saya senang bekerja sama dalam kelompok atau tim." },
+            { id: 21, type: 'E', text: "Saya tertarik menjadi pemimpin dalam kelompok atau organisasi." },
+            { id: 22, type: 'E', text: "Saya senang mempengaruhi atau meyakinkan orang lain." },
+            { id: 23, type: 'E', text: "Saya tertarik pada dunia bisnis, penjualan, atau kegiatan wirausaha." },
+            { id: 24, type: 'E', text: "Saya termotivasi untuk mencapai target atau tujuan tertentu." },
+            { id: 25, type: 'E', text: "Saya nyaman mengambil keputusan penting dalam situasi tertentu." },
+            { id: 26, type: 'C', text: "Saya tertarik pada pekerjaan yang berkaitan dengan data, dokumen, and administrasi." },
+            { id: 27, type: 'C', text: "Saya senang bekerja secara rapi, teratur, and sesuai prosedur." },
+            { id: 28, type: 'C', text: "Saya lebih nyaman pada pekerjaan dengan aturan and langkah kerja yang jelas." },
+            { id: 29, type: 'C', text: "Saya teliti and hati-hati saat mengecek hasil kerja agar tidak terjadi kesalahan." },
+            { id: 30, type: 'C', text: "Saya senang mengatur jadwal, arsip, and sistem kerja agar tertata." }
+        ];
+
+        const riasecNames = {
+            R: "Realistic", I: "Investigative", A: "Artistic",
+            S: "Social", E: "Enterprising", C: "Conventional"
+        };
+
+        const riasecCareers = {
+            R: ["Mekanik", "Insinyur Sipil", "Arsitek", "Pilot", "Teknisi"],
+            I: ["Peneliti", "Analis Data", "Programmer", "Dokter", "Ekonom"],
+            A: ["Desainer", "Copywriter", "Musisi", "Kurator Seni", "Fotografer"],
+            S: ["Guru", "Psikolog", "HR Manager", "Konselor", "Perawat"],
+            E: ["Wirausaha", "Manajer", "Pengacara", "Public Relations", "Sales"],
+            C: ["Akuntan", "Auditor", "Sekretaris", "Arsiparis", "Analis Risiko"]
+        };
+
+        let currentIdx = 0;
+        let answers = [];
+
+        function startTest() {
+            const name = document.getElementById('input-name').value;
+            const cls = document.getElementById('input-class').value;
+            const major = document.getElementById('input-major').value;
+
+            if (!name || !cls || !major) {
+                alert("Harap lengkapi profil Anda terlebih dahulu.");
+                return;
+            }
+
+            document.getElementById('display-name').textContent = name;
+            document.getElementById('section-intro').classList.add('hidden');
+            document.getElementById('section-test').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.remove('hidden');
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = riasecItems[currentIdx];
+            const qTextEl = document.getElementById('q-text');
+            
+            // Efek transisi halus saat ganti pertanyaan
+            qTextEl.style.opacity = 0;
+            qTextEl.style.transform = "translateY(10px)";
+            
+            setTimeout(() => {
+                qTextEl.textContent = q.text;
+                qTextEl.style.opacity = 1;
+                qTextEl.style.transform = "translateY(0)";
+                document.getElementById('curr-q').textContent = currentIdx + 1;
+                document.getElementById('main-progress').style.width = `${((currentIdx) / riasecItems.length) * 100}%`;
+            }, 200);
+        }
+
+        function saveAnswer(val) {
+            const q = riasecItems[currentIdx];
+            let finalVal = val;
+
+            if (q.reverse) finalVal = 6 - val;
+
+            answers.push({ type: q.type, score: finalVal });
+
+            if (currentIdx < riasecItems.length - 1) {
+                currentIdx++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('section-test').classList.add('hidden');
+            document.getElementById('section-result').classList.remove('hidden');
+            document.getElementById('main-progress').style.width = `100%`;
+
+            const totals = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+            answers.forEach(ans => totals[ans.type] += ans.score);
+
+            const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+            const code = sorted.slice(0, 3).map(i => i[0]).join('');
+            document.getElementById('holland-code').textContent = code;
+
+            const chart = document.getElementById('riasec-chart');
+            chart.innerHTML = '';
+            Object.entries(totals).forEach(([type, score]) => {
+                const perc = (score / 25) * 100;
+                chart.insertAdjacentHTML('beforeend', `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-end">
+                            <span class="text-xs font-black uppercase tracking-widest text-slate-400">${riasecNames[type]}</span>
+                            <span class="text-sm font-bold text-slate-800">${score}</span>
+                        </div>
+                        <div class="h-3 bg-slate-50 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-600 rounded-full progress-bar-fill" style="width: ${perc}%"></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            const recBox = document.getElementById('career-recommendation');
+            recBox.innerHTML = '';
+            const topType = sorted[0][0];
+            riasecCareers[topType].forEach(career => {
+                recBox.insertAdjacentHTML('beforeend', `
+                    <span class="px-5 py-3 bg-white/10 border border-white/20 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all cursor-default">
+                        ${career}
+                    </span>
+                `);
+            });
+        }
+    </script>
+</body>
+</html>
