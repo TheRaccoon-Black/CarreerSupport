@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e-MinBa - Kenali Potensimu, Tentukan Kariermu</title>
+    <!-- Mencegah error favicon.ico 404 -->
+    <link rel="icon" href="data:,">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -29,11 +31,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .progress-bar { transition: width 0.4s ease-in-out; }
-        .likert-btn.active {
-            background-color: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -61,29 +58,31 @@
         <!-- 1. Intro & Data Diri -->
         <div id="section-intro" class="fade-in space-y-8">
             <div class="text-center max-w-2xl mx-auto mb-10">
-                <h2 class="text-3xl font-bold text-slate-800 mb-4">Selamat Datang di e-MinBa</h2>
-                <p class="text-slate-600">Aplikasi ini akan membantu Anda mengenali minat karier (RIASEC) dan mengidentifikasi kesulitan dalam pengambilan keputusan karier.</p>
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 leading-relaxed">
+                    e-MinBa hadir sebagai tes minat bakat digital berbasis RIASEC untuk membantu anda mengenali minat karier dalam pengambilan keputusan karier
+                </h2>
+                <p class="text-slate-500 italic text-sm">Selesaikan 30 butir pernyataan untuk melihat profil minat Anda.</p>
             </div>
 
             <div class="bg-gray-light p-8 rounded-2xl border border-gray max-w-md mx-auto">
-                <h3 class="font-title text-xl font-bold mb-6 text-center">Data Diri Siswa</h3>
+                <h3 class="font-title text-xl font-bold mb-6 text-center">Identitas Siswa</h3>
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1">Nama / Inisial</label>
-                        <input type="text" id="input-name" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Contoh: Budi">
+                        <input type="text" id="input-name" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Nama Anda">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-1">Kelas</label>
-                            <input type="text" id="input-class" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="12 IPA 1">
+                            <input type="text" id="input-class" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Contoh: 12 IPA 1">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-1">Jurusan</label>
-                            <input type="text" id="input-major" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="IPA">
+                            <input type="text" id="input-major" class="w-full px-4 py-3 rounded-lg border border-gray focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="IPA / IPS">
                         </div>
                     </div>
                     <button onclick="startTest()" class="w-full bg-primary text-white font-bold py-4 rounded-xl mt-4 hover:opacity-90 transition-all shadow-lg active:scale-95">
-                        Mulai Pengisian Angket
+                        Mulai Tes Sekarang
                     </button>
                 </div>
             </div>
@@ -93,12 +92,12 @@
         <div id="section-test" class="hidden fade-in">
             <div class="mb-8 flex justify-between items-center">
                 <div>
-                    <span id="test-category" class="bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">RIASEC</span>
-                    <h2 id="test-title" class="text-xl font-bold mt-2">Tes Minat Bakat</h2>
+                    <span class="bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Angket RIASEC</span>
+                    <h2 class="text-xl font-bold mt-2">Pilih yang Paling Sesuai</h2>
                 </div>
                 <div class="text-right">
                     <span class="text-sm font-bold text-slate-400">Pertanyaan</span>
-                    <p class="text-xl font-bold text-primary"><span id="curr-q">1</span><span class="text-slate-300">/</span><span id="total-q">45</span></p>
+                    <p class="text-xl font-bold text-primary"><span id="curr-q">1</span><span class="text-slate-300">/</span><span id="total-q">30</span></p>
                 </div>
             </div>
 
@@ -108,23 +107,23 @@
             </div>
 
             <div class="bg-white p-10 rounded-3xl border-2 border-gray shadow-sm text-center">
-                <p id="q-text" class="text-2xl font-semibold text-slate-800 leading-relaxed mb-12">Pernyataan instrumen akan muncul di sini.</p>
+                <p id="q-text" class="text-2xl font-semibold text-slate-800 leading-relaxed mb-12">Pernyataan instrumen...</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                    <button onclick="saveAnswer(1)" class="likert-btn border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 transition-all text-sm">
-                        <span class="block text-xl mb-1">1</span> Sangat Tidak Sesuai
+                    <button onclick="saveAnswer(1)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
+                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">1</span> Sangat Tidak Sesuai
                     </button>
-                    <button onclick="saveAnswer(2)" class="likert-btn border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 transition-all text-sm">
-                        <span class="block text-xl mb-1">2</span> Tidak Sesuai
+                    <button onclick="saveAnswer(2)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
+                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">2</span> Tidak Sesuai
                     </button>
-                    <button onclick="saveAnswer(3)" class="likert-btn border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 transition-all text-sm">
-                        <span class="block text-xl mb-1">3</span> Netral
+                    <button onclick="saveAnswer(3)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
+                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">3</span> Netral
                     </button>
-                    <button onclick="saveAnswer(4)" class="likert-btn border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 transition-all text-sm">
-                        <span class="block text-xl mb-1">4</span> Sesuai
+                    <button onclick="saveAnswer(4)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
+                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">4</span> Sesuai
                     </button>
-                    <button onclick="saveAnswer(5)" class="likert-btn border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 transition-all text-sm">
-                        <span class="block text-xl mb-1">5</span> Sangat Sesuai
+                    <button onclick="saveAnswer(5)" class="border-2 border-slate-200 p-4 rounded-xl font-bold hover:border-blue-500 hover:bg-blue-50 transition-all text-sm group">
+                        <span class="block text-xl mb-1 text-slate-400 group-hover:text-primary">5</span> Sangat Sesuai
                     </button>
                 </div>
             </div>
@@ -132,67 +131,47 @@
 
         <!-- 3. Result Section -->
         <div id="section-result" class="hidden fade-in space-y-8">
-            <div class="bg-primary text-white p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="bg-primary text-white p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
                 <div>
-                    <h2 class="text-3xl font-bold mb-1">Hasil Eksplorasi Karier</h2>
-                    <p class="opacity-80">Profil minat dan kesiapan keputusan karier Anda.</p>
+                    <h2 class="text-3xl font-bold mb-1">Hasil Analisis Minat</h2>
+                    <p class="opacity-80">Profil kecenderungan karier berdasarkan teori Holland.</p>
                 </div>
-                <div class="bg-white/20 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/30 text-center">
-                    <span class="text-xs font-bold uppercase tracking-widest block mb-1">Kode Holland</span>
+                <div class="bg-white/20 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/30 text-center">
+                    <span class="text-xs font-bold uppercase tracking-widest block mb-1">Kode Holland Anda</span>
                     <span id="holland-code" class="text-4xl font-black">---</span>
                 </div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- RIASEC Profile -->
-                <div class="bg-white p-8 rounded-3xl border border-gray shadow-sm">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="p-2 bg-blue-50 rounded-lg text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <h3 class="font-title text-xl font-bold">Profil Minat (RIASEC)</h3>
+            <div class="bg-white p-8 rounded-3xl border border-gray shadow-sm">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="p-2 bg-blue-50 rounded-lg text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
-                    <div id="riasec-chart" class="space-y-4">
-                        <!-- Chart items go here -->
-                    </div>
+                    <h3 class="font-title text-xl font-bold">Skor Dimensi RIASEC</h3>
                 </div>
-
-                <!-- CDDQ Status -->
-                <div class="bg-white p-8 rounded-3xl border border-gray shadow-sm">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="p-2 bg-blue-50 rounded-lg text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        </div>
-                        <h3 class="font-title text-xl font-bold">Kesulitan Keputusan</h3>
-                    </div>
-                    <div id="cddq-chart" class="space-y-4 mb-6">
-                        <!-- CDDQ items go here -->
-                    </div>
-                    <div id="cddq-advice" class="p-4 bg-slate-50 border border-slate-100 rounded-xl text-sm leading-relaxed text-slate-600 italic">
-                        Interpretasi tingkat kesulitan akan muncul di sini.
-                    </div>
+                <div id="riasec-chart" class="grid sm:grid-cols-2 gap-x-12 gap-y-6">
+                    <!-- Chart items go here -->
                 </div>
             </div>
 
-            <!-- Recommendation -->
+            <!-- Career Recommendation -->
             <div class="bg-gray-light p-8 rounded-3xl border border-gray">
-                <h3 class="font-title text-xl font-bold mb-4 flex items-center gap-2">
+                <h3 class="font-title text-xl font-bold mb-6 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    Arah Karier yang Disarankan
+                    Rekomendasi Karier (Tipe Dominan)
                 </h3>
-                <div id="career-recommendation" class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div id="career-recommendation" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                     <!-- Recommended items go here -->
                 </div>
+                <p class="mt-6 text-sm text-slate-500 italic text-center">Hasil di atas merupakan saran awal, diskusikan dengan guru BK untuk pendalaman lebih lanjut.</p>
             </div>
 
             <div class="text-center pt-8">
-                <button onclick="location.reload()" class="text-primary font-bold hover:underline flex items-center gap-2 mx-auto">
+                <button onclick="location.reload()" class="bg-slate-100 text-slate-600 px-6 py-3 rounded-full font-bold hover:bg-slate-200 transition-all inline-flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                     </svg>
@@ -204,12 +183,19 @@
 
     <footer class="bg-white border-t border-gray py-8 mt-auto">
         <div class="max-w-5xl mx-auto px-6 text-center">
-            <p class="text-slate-400 text-sm">&copy; 2026 e-MinBa - Career Decision-Making Support System.</p>
+            <div class="flex items-center justify-center gap-2 text-primary font-bold mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                e-MinBa
+            </div>
+            <p class="text-slate-400 text-sm italic">“Kenali Potensimu, Tentukan Kariermu”</p>
+            <p class="text-slate-300 text-[10px] mt-4 uppercase tracking-widest">&copy; 2026 Career Assessment System</p>
         </div>
     </footer>
 
     <script>
-        // Data Questions dari Dokumen
+        // Data RIASEC sesuai dokumen yang diupload
         const riasecItems = [
             { id: 1, type: 'R', text: "Saya senang melakukan aktivitas yang melibatkan alat atau mesin." },
             { id: 2, type: 'R', text: "Saya tertarik melakukan pekerjaan yang bersifat teknis dan praktis." },
@@ -236,49 +222,28 @@
             { id: 23, type: 'E', text: "Saya tertarik pada dunia bisnis, penjualan, atau kegiatan wirausaha." },
             { id: 24, type: 'E', text: "Saya termotivasi untuk mencapai target atau tujuan tertentu." },
             { id: 25, type: 'E', text: "Saya nyaman mengambil keputusan penting dalam situasi tertentu." },
-            { id: 26, type: 'C', text: "Saya tertarik pada pekerjaan yang berkaitan dengan data, dokumen, dan administrasi." },
-            { id: 27, type: 'C', text: "Saya senang bekerja secara rapi, teratur, dan sesuai prosedur." },
-            { id: 28, type: 'C', text: "Saya lebih nyaman pada pekerjaan dengan aturan dan langkah kerja yang jelas." },
-            { id: 29, type: 'C', text: "Saya teliti dan hati-hati saat mengecek hasil kerja agar tidak terjadi kesalahan." },
-            { id: 30, type: 'C', text: "Saya senang mengatur jadwal, arsip, dan sistem kerja agar tertata." }
+            { id: 26, type: 'C', text: "Saya tertarik pada pekerjaan yang berkaitan dengan data, dokumen, and administrasi." },
+            { id: 27, type: 'C', text: "Saya senang bekerja secara rapi, teratur, and sesuai prosedur." },
+            { id: 28, type: 'C', text: "Saya lebih nyaman pada pekerjaan dengan aturan and langkah kerja yang jelas." },
+            { id: 29, type: 'C', text: "Saya teliti and hati-hati saat mengecek hasil kerja agar tidak terjadi kesalahan." },
+            { id: 30, type: 'C', text: "Saya senang mengatur jadwal, arsip, and sistem kerja agar tertata." }
         ];
 
-        const cddqItems = [
-            { id: 31, type: 'Readiness', text: "Saya merasa belum siap untuk menentukan pilihan karier saya." },
-            { id: 32, type: 'Readiness', text: "Saya sering menunda-nunda ketika harus menentukan keputusan karier." },
-            { id: 33, type: 'Readiness', text: "Saya ragu apakah saya mampu mengambil keputusan karier dengan benar." },
-            { id: 34, type: 'Readiness', text: "Saya merasa bingung harus mulai dari mana untuk memilih karier." },
-            { id: 35, type: 'Readiness', text: "Saya belum memiliki motivasi yang kuat untuk merencanakan karier." },
-            { id: 36, type: 'Info', text: "Saya belum mengetahui pilihan jurusan atau pekerjaan yang sesuai dengan saya." },
-            { id: 37, type: 'Info', text: "Saya belum memiliki cukup informasi tentang dunia kerja yang saya minati." },
-            { id: 38, type: 'Info', text: "Saya kesulitan memahami langkah-langkah yang diperlukan untuk mencapai karier tertentu." },
-            { id: 39, type: 'Info', text: "Saya belum mengetahui kemampuan dan minat saya secara jelas." },
-            { id: 40, type: 'Info', text: "Saya kesulitan menentukan informasi apa saja yang perlu saya cari untuk memutuskan karier." },
-            { id: 41, type: 'Inconsistent', text: "Saya menerima terlalu banyak informasi yang berbeda-beda tentang pilihan karier." },
-            { id: 42, type: 'Inconsistent', text: "Saya merasa bingung karena pendapat orang lain tentang karier saya saling bertentangan." },
-            { id: 43, type: 'Inconsistent', text: "Saya mengalami konflik antara minat saya dan tuntutan lingkungan/keluarga." },
-            { id: 44, type: 'Inconsistent', text: "Saya merasa ragu karena pilihan karier saya memiliki kelebihan dan kekurangan yang sama kuat." },
-            { id: 45, type: 'Inconsistent', text: "Saya sering berubah pikiran karena informasi yang saya peroleh tidak konsisten." }
-        ];
-
-        const allQuestions = [...riasecItems, ...cddqItems];
-        
         const riasecNames = {
             R: "Realistic", I: "Investigative", A: "Artistic",
             S: "Social", E: "Enterprising", C: "Conventional"
         };
 
         const riasecCareers = {
-            R: ["Arsitek", "Insinyur Sipil", "Mekanik", "Pilot", "Teknisi"],
-            I: ["Ilmuwan", "Analis Data", "Software Developer", "Dokter", "Ekonom"],
-            A: ["Desainer Grafis", "Copywriter", "Musisi", "Kurator", "Fotografer"],
-            S: ["Guru", "Psikolog", "HR Manager", "Konselor", "Pekerja Sosial"],
-            E: ["Wirausaha", "Manajer Pemasaran", "Pengacara", "Public Relations"],
-            C: ["Akuntan", "Auditor", "Administrasi", "Arsiparis", "Analis Keuangan"]
+            R: ["Mekanik", "Insinyur Sipil", "Arsitek", "Pilot", "Teknisi"],
+            I: ["Peneliti", "Analis Data", "Programmer", "Dokter", "Ekonom"],
+            A: ["Desainer", "Copywriter", "Musisi", "Kurator Seni", "Fotografer"],
+            S: ["Guru", "Psikolog", "HR Manager", "Konselor", "Perawat"],
+            E: ["Wirausaha", "Manajer", "Pengacara", "Public Relations", "Sales"],
+            C: ["Akuntan", "Auditor", "Sekretaris", "Arsiparis", "Analis Risiko"]
         };
 
-        let userData = {};
-        let currentQuestionIdx = 0;
+        let currentIdx = 0;
         let answers = [];
 
         function startTest() {
@@ -287,11 +252,10 @@
             const major = document.getElementById('input-major').value;
 
             if (!name || !cls || !major) {
-                alert("Mohon lengkapi data diri Anda.");
+                alert("Harap isi data diri lengkap.");
                 return;
             }
 
-            userData = { name, class: cls, major };
             document.getElementById('display-name').textContent = name;
             document.getElementById('display-class').textContent = cls;
             
@@ -299,47 +263,28 @@
             document.getElementById('section-test').classList.remove('hidden');
             document.getElementById('header-user-info').classList.remove('hidden');
             
-            document.getElementById('total-q').textContent = allQuestions.length;
-            showQuestion();
+            renderQuestion();
         }
 
-        function showQuestion() {
-            const q = allQuestions[currentQuestionIdx];
+        function renderQuestion() {
+            const q = riasecItems[currentIdx];
             document.getElementById('q-text').textContent = q.text;
-            document.getElementById('curr-q').textContent = currentQuestionIdx + 1;
-            
-            // Progress
-            const progress = ((currentQuestionIdx) / allQuestions.length) * 100;
-            document.getElementById('main-progress').style.width = `${progress}%`;
-
-            // Category Label
-            const categoryLabel = document.getElementById('test-category');
-            const titleLabel = document.getElementById('test-title');
-            if (currentQuestionIdx < 30) {
-                categoryLabel.textContent = "RIASEC";
-                categoryLabel.className = "bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider";
-                titleLabel.textContent = "Tes Minat Bakat (Holland)";
-            } else {
-                categoryLabel.textContent = "CDDQ";
-                categoryLabel.className = "bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider";
-                titleLabel.textContent = "Tingkat Kesulitan Karier (Levin)";
-            }
+            document.getElementById('curr-q').textContent = currentIdx + 1;
+            document.getElementById('main-progress').style.width = `${(currentIdx / riasecItems.length) * 100}%`;
         }
 
         function saveAnswer(val) {
-            const q = allQuestions[currentQuestionIdx];
+            const q = riasecItems[currentIdx];
             let finalVal = val;
 
-            // Logika Reverse Skor (Item 14 Artistic)
-            if (q.reverse) {
-                finalVal = 6 - val; // 1->5, 2->4, 3->3, 4->2, 5->1
-            }
+            // Reverse Score logic (Item 14)
+            if (q.reverse) finalVal = 6 - val;
 
-            answers.push({ ...q, answer: finalVal });
+            answers.push({ type: q.type, score: finalVal });
 
-            if (currentQuestionIdx < allQuestions.length - 1) {
-                currentQuestionIdx++;
-                showQuestion();
+            if (currentIdx < riasecItems.length - 1) {
+                currentIdx++;
+                renderQuestion();
             } else {
                 showResults();
             }
@@ -350,83 +295,39 @@
             document.getElementById('section-result').classList.remove('hidden');
             document.getElementById('main-progress').style.width = `100%`;
 
-            // Calculate RIASEC
-            const riasecScores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-            answers.filter(a => a.id <= 30).forEach(ans => {
-                riasecScores[ans.type] += ans.answer;
-            });
+            const totals = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+            answers.forEach(ans => totals[ans.type] += ans.score);
 
-            // Holland Code (Top 3)
-            const sortedRiasec = Object.entries(riasecScores).sort((a,b) => b[1] - a[1]);
-            const code = sortedRiasec.slice(0, 3).map(item => item[0]).join('');
+            // Holland Code
+            const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+            const code = sorted.slice(0, 3).map(i => i[0]).join('');
             document.getElementById('holland-code').textContent = code;
 
-            // Render RIASEC Chart
-            const riasecChart = document.getElementById('riasec-chart');
-            riasecChart.innerHTML = '';
-            Object.entries(riasecScores).forEach(([key, score]) => {
-                const percentage = (score / 25) * 100; // max score is 25 per category
-                riasecChart.insertAdjacentHTML('beforeend', `
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-slate-500 uppercase">${riasecNames[key]}</span>
+            // Chart
+            const chart = document.getElementById('riasec-chart');
+            chart.innerHTML = '';
+            Object.entries(totals).forEach(([type, score]) => {
+                const perc = (score / 25) * 100; // 5 items * max 5 = 25
+                chart.insertAdjacentHTML('beforeend', `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase">
+                            <span>${riasecNames[type]}</span>
                             <span>${score} / 25</span>
                         </div>
-                        <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                            <div class="h-full bg-primary transition-all duration-1000 delay-200" style="width: ${percentage}%"></div>
+                        <div class="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                            <div class="h-full bg-primary transition-all duration-1000" style="width: ${perc}%"></div>
                         </div>
                     </div>
                 `);
             });
-
-            // Calculate CDDQ
-            const cddqScores = { Readiness: 0, Info: 0, Inconsistent: 0 };
-            answers.filter(a => a.id > 30).forEach(ans => {
-                cddqScores[ans.type] += ans.answer;
-            });
-
-            // Render CDDQ Chart
-            const cddqChart = document.getElementById('cddq-chart');
-            cddqChart.innerHTML = '';
-            const cddqLabels = { Readiness: "Kurang Kesiapan", Info: "Kurang Informasi", Inconsistent: "Info Tidak Konsisten" };
-            
-            let totalCddq = 0;
-            Object.entries(cddqScores).forEach(([key, score]) => {
-                totalCddq += score;
-                const percentage = (score / 25) * 100;
-                cddqChart.insertAdjacentHTML('beforeend', `
-                    <div>
-                        <div class="flex justify-between text-xs font-bold mb-1">
-                            <span class="text-slate-500 uppercase">${cddqLabels[key]}</span>
-                            <span>${score} / 25</span>
-                        </div>
-                        <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                            <div class="h-full bg-slate-400 transition-all duration-1000 delay-500" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `);
-            });
-
-            // CDDQ Advice
-            const adviceBox = document.getElementById('cddq-advice');
-            const avgScore = totalCddq / 15;
-            if (avgScore <= 2) {
-                adviceBox.innerHTML = "<strong>Status: Kesiapan Baik.</strong> Anda tampak sudah memiliki arah yang cukup jelas dalam pengambilan keputusan karier.";
-            } else if (avgScore <= 3.5) {
-                adviceBox.innerHTML = "<strong>Status: Hambatan Sedang.</strong> Anda mungkin membutuhkan diskusi lebih lanjut dengan guru BK untuk mempermudah pilihan Anda.";
-            } else {
-                adviceBox.innerHTML = "<strong>Status: Hambatan Tinggi.</strong> Anda merasa cukup kesulitan saat ini. Disarankan untuk melakukan sesi bimbingan karier intensif.";
-            }
 
             // Recommendations
-            const recommendationBox = document.getElementById('career-recommendation');
-            recommendationBox.innerHTML = '';
-            // Get from the primary Holland type (top 1)
-            const topType = sortedRiasec[0][0];
+            const recBox = document.getElementById('career-recommendation');
+            recBox.innerHTML = '';
+            const topType = sorted[0][0];
             riasecCareers[topType].forEach(career => {
-                recommendationBox.insertAdjacentHTML('beforeend', `
-                    <div class="p-4 bg-white border border-slate-200 rounded-xl flex items-center gap-3 font-semibold text-slate-700 hover:shadow-md transition-all cursor-default">
-                        <div class="w-2 h-2 rounded-full bg-primary"></div>
+                recBox.insertAdjacentHTML('beforeend', `
+                    <div class="p-3 bg-white border border-slate-100 rounded-xl text-center text-sm font-semibold text-slate-700 shadow-sm">
                         ${career}
                     </div>
                 `);
